@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api1:
+    build: ./api1
+    ports:
+      - "5000:5000" # ผู้ใช้จะเข้าถึง API1 ผ่านพอร์ต 5000
+    environment:
+      PORT: 5000
+      API2_URL: http://api2:5001 # ชื่อ service 'api2' ใน Docker network
+    networks:
+      - my_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  api2:
+    build: ./api2
+    ports:
+      - "5001:5001" # API1 จะเข้าถึง API2 ผ่านพอร์ต 5001 (ภายใน Docker network)
+    environment:
+      PORT: 5001
+    networks:
+      - my_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  my_network:
+    driver: bridge
